@@ -1,0 +1,1307 @@
+package application;
+/**
+ * Imports for main
+ */
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+/**
+ * Runs the application and sets the window parameters including the icon and title
+ * for the window that will be displayed when it is opened
+ */
+public class Main extends Application {
+	@Override
+	public void start(Stage primaryStage) {
+		try {
+			Image icon = new Image("shinyCharm.png");
+			Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setTitle("Shiny Hunter");
+			primaryStage.getIcons().add(icon);
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+}
+
+package application;
+/**
+ * imports for saveData
+ */
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class saveData {
+
+	private static int encounterCount = 0;
+	private static double probabilityMessage = 0.0;
+/**
+ * checkData is called later to read the text files used to save the hunt data 
+ * for later.
+ */
+	public static void checkData(String filePath) {
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("Encounters:")) {
+					String value = line.replace("Encounters:", "").trim();
+					encounterCount = Integer.parseInt(value);
+				} else if (line.startsWith("Probability:")) {
+					String value = line.replace("Probability:", "").replace("%", "").trim();
+					probabilityMessage = Double.parseDouble(value);
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+			encounterCount = 0;
+			probabilityMessage = 0.0;
+		} catch (IOException e) {
+			System.out.println("There was a problem reading the save file");
+		}
+	}
+/*
+ * read data using the buffered reader 
+ */
+	public static void readData(String filePath) {
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			System.out.println("------Current save data-------\n");
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+
+		} catch (FileNotFoundException e) {
+			System.out.println("No previous save starting new hunt");
+		} catch (IOException e) {
+			System.out.println("There was a problem reading your previous save data");
+		}
+	}
+
+	public static void writeData(String filePath) {
+		Scanner inputScanner = new Scanner(System.in);
+		System.out.println("Hit enter for each encounter or type End to finish");
+		while (true) {
+			String input = inputScanner.nextLine();
+			if (input.isEmpty()) {
+				encounterCount++;
+				continue;
+			}
+			if (input.equalsIgnoreCase("end")) {
+				System.out.print("Ending session....");
+				break;
+			}if(input.equalsIgnoreCase("Reset")) {
+				encounterCount = 0;
+				probabilityMessage = 0.0;
+			} else {
+				System.out.print("Not valid try again");
+				continue;
+			}
+		}
+		inputScanner.close();
+	}
+/*
+ * save data sets the values used by the specific pokemon's static void
+ */
+	public static void saveGameData(String filePath, int pokedexNum, String pokemonName) {
+		try (FileWriter writer = new FileWriter(filePath)) {
+			probabilityMessage = (1 - Math.pow((8191.0 / 8192.0), encounterCount)) * 100;
+
+			writer.write(pokedexNum + "\n" + pokemonName + "\nEncounters:" + encounterCount + "\nProbability: "
+					+ String.format("%.2f", probabilityMessage) + " %\n");
+		} catch (IOException e) {
+			System.out.println("There was a problem saving your file");
+		}
+	}
+/*
+ * individual method for each pokemon which interacts with shakingGrass class
+ * to get the specific file path and get the saved variables saved.
+ */
+	public static void Totodile() {
+		shakingGrass Totodile = new shakingGrass("Path", 0, "Totodile");
+		Totodile.setFilePath("totodile.txt");
+		Totodile.setPokedexNum(158);
+		Totodile.setPokemonName("Totodile");
+		System.out.println("You chose " + Totodile.getPokemonName());
+		saveData.checkData(Totodile.getFilePath());
+		saveData.readData(Totodile.getFilePath());
+		saveData.writeData(Totodile.getFilePath());
+		saveData.saveGameData(Totodile.getFilePath(), Totodile.getPokedexNum(), Totodile.getPokemonName());
+	}
+	public static void chikorita() {
+		shakingGrass Chikorita = new shakingGrass("Path" , 0 , "Chikorita");
+		Chikorita.setFilePath("chikorita.txt");
+		Chikorita.setPokedexNum(152);
+		Chikorita.setPokemonName("Chikorita");
+		System.out.println("You chose " + Chikorita.getPokemonName());
+		saveData.checkData(Chikorita.getFilePath());
+		saveData.readData(Chikorita.getFilePath());
+		saveData.writeData(Chikorita.getFilePath());
+		saveData.saveGameData(Chikorita.getFilePath(), Chikorita.getPokedexNum(), Chikorita.getPokemonName());
+	}
+	public static void cyndaquil() {
+		shakingGrass Cyndaquil = new shakingGrass("Path", 0 , "Cyndaquil");
+		Cyndaquil.setFilePath("cyndaquil.txt");
+		Cyndaquil.setPokedexNum(155);
+		Cyndaquil.setPokemonName("Cyndaquil");
+		System.out.println("You chose " + Cyndaquil.getPokemonName());
+		saveData.checkData(Cyndaquil.getFilePath());
+		saveData.readData(Cyndaquil.getFilePath());
+		saveData.writeData(Cyndaquil.getFilePath());
+		saveData.saveGameData(Cyndaquil.getFilePath(), Cyndaquil.getPokedexNum(), Cyndaquil.getPokemonName());
+	}
+	/*
+	 * getters to use these values in controller classes
+	 */
+	public static int getEncounterCount() {
+	    return encounterCount;
+	}
+	public static double getProbabilityMessage() {
+	    return probabilityMessage;
+	}
+	public static void addEncounter() {
+	    encounterCount++;
+	}
+	}
+
+package application;
+
+public class shakingGrass {
+/*
+ * variables set and using getters and setters for the variables in saveData
+ * for each of the pokemon.
+ */
+	private String filePath;
+	private int pokedexNum;
+	private String pokemonName;
+	
+shakingGrass (String filePath, int pokedexNum, String pokemonName) {
+	this.filePath = filePath;
+	this.pokemonName = pokemonName;
+	this.pokedexNum = pokedexNum;
+}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+	public int getPokedexNum() {
+		return pokedexNum;
+	}
+	public void setPokedexNum(int pokedexNum) {
+		this.pokedexNum = pokedexNum;
+	}
+	public String getPokemonName() {
+		return pokemonName;
+	}
+	public void setPokemonName(String pokemonName) {
+		this.pokemonName = pokemonName;
+	}
+}
+
+package application;
+/**
+ * imports for controller class
+ */
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import java.io.IOException;
+import javafx.event.ActionEvent;
+
+public class controller {
+/**
+ * FXML variables to be used in the controller class
+ */
+	@FXML
+	private Stage stage;
+	@FXML
+	private Scene scene;
+	@FXML
+	private Parent root;
+	@FXML
+	private TextField textField;
+	@FXML
+	private Button myButton;
+	@FXML
+	private Button exitButton;
+	@FXML
+	private Pane mainPane;
+	/**
+	 * Open the text file and switch the pane to begin the hunt displaying the data
+	 * from saveData
+	 */
+	public void start(ActionEvent e) throws IOException {
+		try {
+
+			String input = textField.getText();
+
+			if (!input.equalsIgnoreCase("Cyndaquil") && !input.equalsIgnoreCase("Chikorita")
+					&& !input.equalsIgnoreCase("Totodile")) {
+
+				System.out.println("Invalid Pokemon");
+				return;
+			}
+
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("select.fxml"));
+
+			root = loader.load();
+
+			controlScene2 scene2Controller = loader.getController();
+
+			scene2Controller.setPokemon(input);
+			stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+			scene = new Scene(root);
+			stage.setScene(scene);
+			stage.show();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+	/**
+	 * Closes the window when done with the program
+	 */
+	public void logout(ActionEvent e) {
+
+		stage = (Stage) mainPane.getScene().getWindow();
+		stage.close();
+
+	}
+}
+package application;
+
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
+/**
+ * Imports for javaFX
+ */
+import java.io.IOException;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
+public class controlScene2 {
+	/**
+	 * Names the labels and buttons used on the second page of the app to be used
+	 * later in the later classes and as a part of the select.fxml
+	 */
+	@FXML
+	private Label pokemonLabel;
+
+	@FXML
+	private Label encounterLabel;
+
+	@FXML
+	private Label probabilityLabel;
+
+	@FXML
+	private Button huntButton;
+	/**
+	 * variables to be called later
+	 */
+	private String pokemonName;
+	private String filePath;
+	private int pokedexNum;
+
+	/**
+	 * sets the variable pokemonName and initiates loadPokemonData which calls the
+	 * data stored from the class saveData and displays that data using the FXML
+	 * labels
+	 */
+	public void setPokemon(String pokemonName) {
+		this.pokemonName = pokemonName;
+
+		System.out.println("Selected Pokemon: " + pokemonName);
+
+		loadPokemonData();
+	}
+    @FXML
+    public void handleStartHunting(ActionEvent event) {
+        // 1. Bring the emulator to focus (your original logic from main)
+        try {
+            Robot r = new Robot();
+            r.mouseMove(1500, 100);
+            r.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+            r.delay(100);
+            r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+            r.delay(500); // Give the emulator a moment to take focus
+        } catch (AWTException e) {
+            System.out.println("Could not focus emulator window.");
+        }
+
+        // 2. Declare the base class reference
+        robotLoop activeBot;
+
+        // 3. Instantiate the exact child variation based on the user's choice
+        if (pokemonName.equalsIgnoreCase("Chikorita")) {
+        	 chikoritaRobot chiko = new chikoritaRobot(this.filePath, this.pokedexNum, this.pokemonName);
+             chiko.uiController = this; 
+             activeBot = chiko;
+         } else if (pokemonName.equalsIgnoreCase("Cyndaquil")) {
+        	 cyndaquilRobot cynder = new cyndaquilRobot(this.filePath, this.pokedexNum, this.pokemonName);
+             cynder.uiController = this; 
+             activeBot = cynder;
+         } else {
+        	 totodileRobot toto = new totodileRobot(this.filePath, this.pokedexNum, this.pokemonName);
+             toto.uiController = this; 
+             activeBot = toto;
+         }
+         
+        Thread botThread = new Thread(() -> {
+            activeBot.normalLoop(); 
+        });
+        
+        botThread.setDaemon(true); 
+        botThread.start();
+    }
+
+
+	private void loadPokemonData() {
+
+		if (pokemonName.equalsIgnoreCase("Cyndaquil")) {
+
+			filePath = "cyndaquil.txt";
+
+			pokedexNum = 155;
+
+		} else if (pokemonName.equalsIgnoreCase("Chikorita")) {
+
+			filePath = "chikorita.txt";
+
+			pokedexNum = 152;
+			
+		} else if (pokemonName.equalsIgnoreCase("Totodile")) {
+
+			filePath = "totodile.txt";
+
+			pokedexNum = 158;
+		}
+		saveData.checkData(filePath);
+		pokemonLabel.setText(pokemonName);
+		encounterLabel.setText("Encounters: " + saveData.getEncounterCount());
+
+		probabilityLabel.setText("Probability: " + String.format("%.2f", saveData.getProbabilityMessage()) + "%");
+	}
+
+	/**
+	 * On action for the back button brings back the first scene to make a new
+	 * choice
+	 */
+	public void backMain(ActionEvent e) throws IOException {
+
+		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+
+		Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+
+		Scene scene = new Scene(root);
+
+		stage.setScene(scene);
+		stage.show(); 
+		
+	}
+	public void updateUiLabels() {
+
+	    System.out.println("Updating UI to encounter: "
+	            + saveData.getEncounterCount());
+
+	    encounterLabel.setText(
+	            "Encounters: " + saveData.getEncounterCount()
+	    );
+
+	    probabilityLabel.setText(
+	            "Probability: "
+	            + String.format("%.2f", saveData.getProbabilityMessage())
+	            + "%"
+	    );
+	}
+}
+package application;
+
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+public class robotLoop {
+	
+	protected static String filePath;
+    protected static int pokedexNum;
+    protected String pokemonName;
+	
+	public static void main(String[] args) {
+		Robot r;
+		try {
+		r = new Robot();
+		r.delay(5000);
+		r.mouseMove(1500, 100);
+		r.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+		r.delay(100);
+        r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        r.delay(400);
+		r.keyPress(KeyEvent.VK_1);
+		r.delay(100);
+		r.keyRelease(KeyEvent.VK_1);
+		r.delay(600);
+		r.keyPress(KeyEvent.VK_P);
+		r.delay(100);
+		r.keyRelease(KeyEvent.VK_P);
+		r.delay(500);
+		}catch (AWTException e) {
+			e.printStackTrace();
+			}
+		
+		if(pokedexNum==155) {
+		cyndaquilRobot c = new cyndaquilRobot("cyndaquil.txt\"",
+			    155,
+			    "Cyndaquil");
+		c.normalLoop();
+				}
+		else if(pokedexNum == 152) {
+		chikoritaRobot c = new chikoritaRobot(
+			    "chikorita.txt",
+			    152,
+			    "Chikorita");
+		c.normalLoop();
+		}
+		else if(pokedexNum == 158) {
+			totodileRobot c = new totodileRobot(
+					"totodile.txt",
+				    158,
+				    "Totodile");
+			c.normalLoop();
+			}
+		}
+	void normalLoop() {
+		
+	}
+	public static boolean saveFinal() {
+		try {
+		Robot end = new Robot();
+		Color blue = new Color(60, 109, 142);
+		Color grey = new Color(107, 107, 115);
+		Color background = end.getPixelColor(1451, 215);
+		Color table = end.getPixelColor(1255, 800);
+		if (background.equals(grey) || !table.equals(blue)) {
+		    end.delay(2000);
+		    System.out.println("loop out of sync");
+
+		    end.keyPress(KeyEvent.VK_R);
+		    end.keyPress(KeyEvent.VK_CONTROL);
+		    end.delay(133);
+		    end.keyRelease(KeyEvent.VK_R);
+		    end.keyRelease(KeyEvent.VK_CONTROL);
+
+		    end.delay(2000);
+
+		    return false;
+		}else {
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(2500);
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(12000);
+		//press x to open pokeball if shiny
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		//press x for nickname
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait at least 2 seconds
+		end.delay(2200);
+		//press down arrow
+		end.keyPress(KeyEvent.VK_DOWN);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_DOWN);
+		end.delay(201);
+		//press right arrow
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(201);
+		//press x to select L
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(221);
+		//press up, press up, press right
+		end.keyPress(KeyEvent.VK_UP);
+		end.delay(203);
+		end.keyRelease(KeyEvent.VK_UP);
+		end.delay(201);
+		end.keyPress(KeyEvent.VK_UP);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_UP);
+		end.delay(221);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(231);
+		//press x for lower case
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(350);
+		//press down, right, right, right, right, right, right
+		end.keyPress(KeyEvent.VK_DOWN);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_DOWN);
+		end.delay(221);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(231);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(231);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(231);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(231);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(231);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(231);
+		//press x for i
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(321);
+		//press down, left5
+		end.keyPress(KeyEvent.VK_DOWN);
+		end.delay(202);
+		end.keyRelease(KeyEvent.VK_DOWN);
+		end.delay(221);
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(259);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(258);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(257);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(256);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(255);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		//press x for n
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(254);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(221);
+		//press left3
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(253);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(252);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		end.keyPress(KeyEvent.VK_LEFT);
+		end.delay(255);
+		end.keyRelease(KeyEvent.VK_LEFT);
+		end.delay(207);
+		//press x for k
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(255);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 2 seconds 
+		end.delay(2121); 
+		//press enter, x for ok
+		end.keyPress(KeyEvent.VK_ENTER);
+		end.delay(225);
+		end.keyRelease(KeyEvent.VK_ENTER);
+		end.delay(214);
+		//press x for yes
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(210);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 5 seconds 
+		end.delay(5100);
+		//press x 
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(209);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 2 seconds
+		end.delay(2100);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(207);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 1 second
+		end.delay(1304);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(206);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 2 seconds
+		end.delay(2300);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(205);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 1 second
+		end.delay(1200);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(204);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 3 seconds
+		end.delay(3210);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(203);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 1.5 seconds
+		end.delay(1605);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(220);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 1.25 seconds
+		end.delay(1369);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(220);
+		end.keyRelease(KeyEvent.VK_X);
+		//wait 1.5 seconds
+		end.delay(1775);
+		//press x
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(300);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(300);
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(1200);
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(2043);
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(2043);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(207);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(5000);
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(2043);
+		//press s to open the bottom menu
+		end.keyPress(KeyEvent.VK_S);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_S);
+		//press right arrow 
+		end.delay(552);
+		end.keyPress(KeyEvent.VK_RIGHT);
+		end.delay(207);
+		end.keyRelease(KeyEvent.VK_RIGHT);
+		end.delay(555);
+		//press x to open save
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(643);
+		//press x for yes
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(643);
+		//press x for overwrite
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(643);
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(643);
+		end.keyPress(KeyEvent.VK_X);
+		end.delay(200);
+		end.keyRelease(KeyEvent.VK_X);
+		end.delay(643);
+		}
+		}catch(AWTException e) {
+			System.out.print("There was a problem with your save loop check your speed");
+		}
+		return true;
+		
+}
+}
+package application;
+
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+import javafx.application.Platform;
+
+public class cyndaquilRobot extends robotLoop {
+
+	private final String botFilePath;
+    private final int botPokedexNum;
+    private final String botPokemonName;
+    public controlScene2 uiController;
+
+    // 2. Add a constructor to firmly lock in the file parameters
+    public cyndaquilRobot(String filePath, int pokedexNum, String pokemonName) {
+        this.botFilePath = filePath;
+        this.botPokedexNum = pokedexNum;
+        this.botPokemonName = pokemonName;
+    }
+	
+	public static void main(String[] args) {
+		
+	}
+	@Override
+	public void normalLoop() {
+	    try {
+	        Robot cyndaquil = new Robot();
+
+	        Color normalValue = new Color(49, 107, 132);
+	        double tolerance = 4.0;
+	        boolean shinyFound = false;
+
+	        while (!shinyFound) {
+
+	            cyndaquil.delay(5000);
+
+	            // Reset the game
+	            cyndaquil.keyPress(KeyEvent.VK_R);
+	            cyndaquil.keyPress(KeyEvent.VK_CONTROL);
+	            cyndaquil.delay(133);
+	            cyndaquil.keyRelease(KeyEvent.VK_R);
+	            cyndaquil.keyRelease(KeyEvent.VK_CONTROL);
+
+	            // Wait until a new input can be loaded
+	            cyndaquil.delay(15300);
+
+	            // Press X to open the main menu
+	            cyndaquil.keyPress(KeyEvent.VK_X);
+	            cyndaquil.delay(130);
+	            cyndaquil.keyRelease(KeyEvent.VK_X);
+	            cyndaquil.delay(7300);
+
+	            // Press X to open the saves
+	            cyndaquil.keyPress(KeyEvent.VK_X);
+	            cyndaquil.delay(130);
+	            cyndaquil.keyRelease(KeyEvent.VK_X);
+	            cyndaquil.delay(7400);
+
+	            // Press X to select the save
+	            cyndaquil.keyPress(KeyEvent.VK_X);
+	            cyndaquil.delay(130);
+	            cyndaquil.keyRelease(KeyEvent.VK_X);
+	            cyndaquil.delay(3500);
+
+	            // Press X to open options
+	            cyndaquil.keyPress(KeyEvent.VK_X);
+	            cyndaquil.delay(130);
+	            cyndaquil.keyRelease(KeyEvent.VK_X);
+	            cyndaquil.delay(3200);
+
+	            // Press X to select Pokemon
+	            cyndaquil.keyPress(KeyEvent.VK_X);
+	            cyndaquil.delay(130);
+	            cyndaquil.keyRelease(KeyEvent.VK_X);
+	            cyndaquil.delay(3400);
+	            
+	            //move left to select correct option
+	            cyndaquil.keyPress(KeyEvent.VK_LEFT);
+	            cyndaquil.delay(130);
+	            cyndaquil.keyRelease(KeyEvent.VK_LEFT);
+	            cyndaquil.delay(3400);
+
+	            // Check cyndaquil's color
+	            Color currentColor = cyndaquil.getPixelColor(1447, 233);
+
+	            cyndaquil.delay(3500);
+
+	            double distance = getColorDistance(currentColor, normalValue);
+
+	            System.out.println(
+	                "Current Distance: " + distance
+	                + " | RGB: "
+	                + currentColor.getRed() + ","
+	                + currentColor.getGreen() + ","
+	                + currentColor.getBlue()
+	            );
+
+	            /*
+	             * Count every encounter before checking whether it is shiny.
+	             */
+	            saveData.checkData(botFilePath);
+
+	            saveData.addEncounter();
+
+	            saveData.saveGameData(
+	                botFilePath,
+	                botPokedexNum,
+	                botPokemonName
+	            );
+
+	            System.out.println(
+	                "Saved encounter: " + saveData.getEncounterCount()
+	            );
+
+	            /*
+	             * Update JavaFX labels.
+	             */
+	            Platform.runLater(() -> {
+
+	                if (uiController != null) {
+
+	                    uiController.updateUiLabels();
+
+	                } else {
+
+	                    System.out.println("ERROR: uiController is null");
+	                }
+	            });
+
+	            /*
+	             * Check whether the detected color is different enough
+	             * from the normal cyndaquil color.
+	             */
+	            if (distance > tolerance) {
+
+	                System.out.println("Possible shiny detected!");
+
+	                boolean confirmed = robotLoop.saveFinal();
+
+	                if (confirmed) {
+
+	                    System.out.println("Shiny confirmed!");
+
+	                    shinyFound = true;
+
+	                } else {
+
+	                    System.out.println(
+	                        "False detection or loop out of sync. Continuing hunt..."
+	                    );
+	                }
+
+	            } else {
+
+	                System.out.println("Not shiny. Resetting...");
+	            }
+	        }
+
+	    } catch (AWTException e) {
+
+	        System.out.println(
+	            "Robot error: Check your screen system/permissions."
+	        );
+	    }
+	}
+
+public static double getColorDistance(Color c1, Color c2) {
+   int rDiff = c1.getRed() - c2.getRed();
+   int gDiff = c1.getGreen() - c2.getGreen();
+   int bDiff = c1.getBlue() - c2.getBlue();
+   return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+}
+}
+package application;
+
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+import javafx.application.Platform;
+
+public class totodileRobot extends robotLoop {
+
+	private final String botFilePath;
+    private final int botPokedexNum;
+    private final String botPokemonName;
+    public controlScene2 uiController;
+
+    // 2. Add a constructor to firmly lock in the file parameters
+    public totodileRobot(String filePath, int pokedexNum, String pokemonName) {
+        this.botFilePath = filePath;
+        this.botPokedexNum = pokedexNum;
+        this.botPokemonName = pokemonName;
+    }
+	
+	public static void main(String[] args) {
+		
+	}
+	@Override
+	public void normalLoop() {
+	    try {
+	        Robot totodile = new Robot();
+
+	        Color normalValue = new Color(107, 181, 231);
+	        double tolerance = 4.0;
+	        boolean shinyFound = false;
+
+	        while (!shinyFound) {
+
+	            totodile.delay(5000);
+
+	            // Reset the game
+	            totodile.keyPress(KeyEvent.VK_R);
+	            totodile.keyPress(KeyEvent.VK_CONTROL);
+	            totodile.delay(133);
+	            totodile.keyRelease(KeyEvent.VK_R);
+	            totodile.keyRelease(KeyEvent.VK_CONTROL);
+
+	            // Wait until a new input can be loaded
+	            totodile.delay(15300);
+
+	            // Press X to open the main menu
+	            totodile.keyPress(KeyEvent.VK_X);
+	            totodile.delay(130);
+	            totodile.keyRelease(KeyEvent.VK_X);
+	            totodile.delay(7300);
+
+	            // Press X to open the saves
+	            totodile.keyPress(KeyEvent.VK_X);
+	            totodile.delay(130);
+	            totodile.keyRelease(KeyEvent.VK_X);
+	            totodile.delay(7400);
+
+	            // Press X to select the save
+	            totodile.keyPress(KeyEvent.VK_X);
+	            totodile.delay(130);
+	            totodile.keyRelease(KeyEvent.VK_X);
+	            totodile.delay(3500);
+
+	            // Press X to open options
+	            totodile.keyPress(KeyEvent.VK_X);
+	            totodile.delay(130);
+	            totodile.keyRelease(KeyEvent.VK_X);
+	            totodile.delay(3200);
+
+	            // Press X to select Pokemon
+	            totodile.keyPress(KeyEvent.VK_X);
+	            totodile.delay(130);
+	            totodile.keyRelease(KeyEvent.VK_X);
+	            totodile.delay(3400);
+	            
+	            //move right to select correct option
+	            totodile.keyPress(KeyEvent.VK_RIGHT);
+	            totodile.delay(130);
+	            totodile.keyRelease(KeyEvent.VK_RIGHT);
+	            totodile.delay(3400);
+
+	            // Check totodile's color
+	            Color currentColor = totodile.getPixelColor(1471, 256);
+
+	            totodile.delay(3500);
+
+	            double distance = getColorDistance(currentColor, normalValue);
+
+	            System.out.println(
+	                "Current Distance: " + distance
+	                + " | RGB: "
+	                + currentColor.getRed() + ","
+	                + currentColor.getGreen() + ","
+	                + currentColor.getBlue()
+	            );
+
+	            /*
+	             * Count every encounter before checking whether it is shiny.
+	             */
+	            saveData.checkData(botFilePath);
+
+	            saveData.addEncounter();
+
+	            saveData.saveGameData(
+	                botFilePath,
+	                botPokedexNum,
+	                botPokemonName
+	            );
+
+	            System.out.println(
+	                "Saved encounter: " + saveData.getEncounterCount()
+	            );
+
+	            /*
+	             * Update JavaFX labels.
+	             */
+	            Platform.runLater(() -> {
+
+	                if (uiController != null) {
+
+	                    uiController.updateUiLabels();
+
+	                } else {
+
+	                    System.out.println("ERROR: uiController is null");
+	                }
+	            });
+
+	            /*
+	             * Check whether the detected color is different enough
+	             * from the normal totodile color.
+	             */
+	            if (distance > tolerance) {
+
+	                System.out.println("Possible shiny detected!");
+
+	                boolean confirmed = robotLoop.saveFinal();
+
+	                if (confirmed) {
+
+	                    System.out.println("Shiny confirmed!");
+
+	                    shinyFound = true;
+
+	                } else {
+
+	                    System.out.println(
+	                        "False detection or loop out of sync. Continuing hunt..."
+	                    );
+	                }
+
+	            } else {
+
+	                System.out.println("Not shiny. Resetting...");
+	            }
+	        }
+
+	    } catch (AWTException e) {
+
+	        System.out.println(
+	            "Robot error: Check your screen system/permissions."
+	        );
+	    }
+	}
+
+public static double getColorDistance(Color c1, Color c2) {
+   int rDiff = c1.getRed() - c2.getRed();
+   int gDiff = c1.getGreen() - c2.getGreen();
+   int bDiff = c1.getBlue() - c2.getBlue();
+   return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+}
+}
+package application;
+
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+import javafx.application.Platform;
+
+public class chikoritaRobot extends robotLoop {
+
+	private final String botFilePath;
+    private final int botPokedexNum;
+    private final String botPokemonName;
+    public controlScene2 uiController;
+
+    // 2. Add a constructor to firmly lock in the file parameters
+    public chikoritaRobot(String filePath, int pokedexNum, String pokemonName) {
+        this.botFilePath = filePath;
+        this.botPokedexNum = pokedexNum;
+        this.botPokemonName = pokemonName;
+    }
+	
+	public static void main(String[] args) {
+		
+	}
+	@Override
+	public void normalLoop() {
+	    try {
+	        Robot chikorita = new Robot();
+
+	        Color normalValue = new Color(214, 247, 123);
+	        double tolerance = 4.0;
+	        boolean shinyFound = false;
+
+	        while (!shinyFound) {
+
+	            chikorita.delay(5000);
+
+	            // Reset the game
+	            chikorita.keyPress(KeyEvent.VK_R);
+	            chikorita.keyPress(KeyEvent.VK_CONTROL);
+	            chikorita.delay(133);
+	            chikorita.keyRelease(KeyEvent.VK_R);
+	            chikorita.keyRelease(KeyEvent.VK_CONTROL);
+
+	            // Wait until a new input can be loaded
+	            chikorita.delay(15300);
+
+	            // Press X to open the main menu
+	            chikorita.keyPress(KeyEvent.VK_X);
+	            chikorita.delay(130);
+	            chikorita.keyRelease(KeyEvent.VK_X);
+	            chikorita.delay(7300);
+
+	            // Press X to open the saves
+	            chikorita.keyPress(KeyEvent.VK_X);
+	            chikorita.delay(130);
+	            chikorita.keyRelease(KeyEvent.VK_X);
+	            chikorita.delay(7400);
+
+	            // Press X to select the save
+	            chikorita.keyPress(KeyEvent.VK_X);
+	            chikorita.delay(130);
+	            chikorita.keyRelease(KeyEvent.VK_X);
+	            chikorita.delay(3500);
+
+	            // Press X to open options
+	            chikorita.keyPress(KeyEvent.VK_X);
+	            chikorita.delay(130);
+	            chikorita.keyRelease(KeyEvent.VK_X);
+	            chikorita.delay(3200);
+
+	            // Press X to select Pokemon
+	            chikorita.keyPress(KeyEvent.VK_X);
+	            chikorita.delay(130);
+	            chikorita.keyRelease(KeyEvent.VK_X);
+	            chikorita.delay(3400);
+
+	            // Check Chikorita's color
+	            Color currentColor = chikorita.getPixelColor(1451, 260);
+
+	            chikorita.delay(3500);
+
+	            double distance = getColorDistance(currentColor, normalValue);
+
+	            System.out.println(
+	                "Current Distance: " + distance
+	                + " | RGB: "
+	                + currentColor.getRed() + ","
+	                + currentColor.getGreen() + ","
+	                + currentColor.getBlue()
+	            );
+
+	            /*
+	             * Count every encounter before checking whether it is shiny.
+	             */
+	            saveData.checkData(botFilePath);
+
+	            saveData.addEncounter();
+
+	            saveData.saveGameData(
+	                botFilePath,
+	                botPokedexNum,
+	                botPokemonName
+	            );
+
+	            System.out.println(
+	                "Saved encounter: " + saveData.getEncounterCount()
+	            );
+
+	            /*
+	             * Update JavaFX labels.
+	             */
+	            Platform.runLater(() -> {
+
+	                if (uiController != null) {
+
+	                    uiController.updateUiLabels();
+
+	                } else {
+
+	                    System.out.println("ERROR: uiController is null");
+	                }
+	            });
+
+	            /*
+	             * Check whether the detected color is different enough
+	             * from the normal Chikorita color.
+	             */
+	            if (distance > tolerance) {
+
+	                System.out.println("Possible shiny detected!");
+
+	                boolean confirmed = robotLoop.saveFinal();
+
+	                if (confirmed) {
+
+	                    System.out.println("Shiny confirmed!");
+
+	                    shinyFound = true;
+
+	                } else {
+
+	                    System.out.println(
+	                        "False detection or loop out of sync. Continuing hunt..."
+	                    );
+	                }
+
+	            } else {
+
+	                System.out.println("Not shiny. Resetting...");
+	            }
+	        }
+
+	    } catch (AWTException e) {
+
+	        System.out.println(
+	            "Robot error: Check your screen system/permissions."
+	        );
+	    }
+	}
+
+public static double getColorDistance(Color c1, Color c2) {
+   int rDiff = c1.getRed() - c2.getRed();
+   int gDiff = c1.getGreen() - c2.getGreen();
+   int bDiff = c1.getBlue() - c2.getBlue();
+   return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+}
+}
